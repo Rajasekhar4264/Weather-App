@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        referrerpolicy="no-referrer" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        main {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(96, 95, 95);
+        }
+
+        .container {
+            width: 600px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px white;
+            background: linear-gradient(to right, purple, cyan);
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container .search {
+            width: 100%;
+            text-align: center;
+        }
+
+        .container .search>input {
+            width: 40%;
+            height: 50px;
+            font-size: 22px;
+        }
+
+        .container .search>button {
+            padding: 7px 12px;
+            font-size: 22px;
+            height: 50px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .container .search>input::placeholder {
+            color: red;
+        }
+
+        .info {
+            width: 100%;
+            display: none;
+            /* convert to flex after search */
+            flex-direction: column;
+            color: white;
+            gap: 30px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .city h1 {
+            font-size: 45px;
+        }
+
+        .wind {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section class="container">
+            <div class="search">
+                <input type="text" required placeholder="Write the city...." id="city">
+                <button id="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div class="info">
+                <div class="image">
+                    <img src="" alt="Weather Icon" height="50px" width="50px" id="weather-icon">
+                </div>
+                <div class="city">
+                    <h2 id="cityname">City</h2>
+                    <h1 id="temp">Temp</h1>
+                </div>
+                <div class="wind">
+                    <h1 id="wind-speed">WIND: </h1>
+                    <h1 id="humidity">HUMIDITY: </h1>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        const cityInput = document.getElementById("city");
+        const searchBtn = document.getElementById("search-btn");
+        const infoSection = document.querySelector(".info");
+        const cityName = document.getElementById("cityname");
+        const temp = document.getElementById("temp");
+        const windSpeed = document.getElementById("wind-speed");
+        const humidity = document.getElementById("humidity");
+        const weatherIcon = document.getElementById("weather-icon");
+
+        searchBtn.addEventListener("click", () => {
+            const city = cityInput.value.trim();
+            if (city) {
+                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=7b5ff3a3712d9379bd78c619fe3f40e8&units=metric`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cod === 200) {
+                            infoSection.style.display = "flex";
+                            cityName.innerHTML = data.name;
+                            temp.innerHTML = data.main.temp + "℃";
+                            windSpeed.innerHTML = `WIND: ${data.wind.speed} m/s`;
+                            humidity.innerHTML = `HUMIDITY: ${data.main.humidity}%`;
+                            weatherIcon.src = `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => console.error("Error fetching data:", error));
+            } else {
+                alert("Please enter a city name!");
+            }
+        });
+    </script>
+</body>
+
+</html>
